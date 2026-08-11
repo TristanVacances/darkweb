@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "DARKWEB",
+  "version": "1.0.0",
+  "description": "Plunge any page into total darkness. Your mouse is a flashlight — move it to see. Spooky.",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "DARKWEB — toggle blackout",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "permissions": ["storage"],
+  "commands": {
+    "toggle-darkweb": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Toggle DARKWEB blackout"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/state.js", "src/halo.js", "src/drone.js", "src/darkweb.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        width: 250px;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0a0a0c;
+        color: #d7d7de;
+      }
+      .wrap { padding: 16px; }
+      h1 {
+        font-size: 15px; margin: 0 0 2px; letter-spacing: 2px; font-weight: 800;
+        display: flex; align-items: center; gap: 8px; color: #f2f2f5;
+      }
+      h1 img { width: 22px; height: 22px; border-radius: 6px; }
+      .tag { font-size: 11px; color: #6f6f7a; margin: 0 0 14px; letter-spacing: 0.3px; }
+      .toggle {
+        width: 100%; border: 1px solid #26262e; border-radius: 12px; padding: 14px;
+        font-size: 16px; font-weight: 700; cursor: pointer;
+        transition: background 0.15s, transform 0.05s, color 0.15s;
+      }
+      .toggle:active { transform: scale(0.98); }
+      .on  { background: #e8e8ef; color: #0a0a0c; border-color: #e8e8ef; }
+      .off { background: #16161b; color: #8a8a95; }
+      .controls { margin-top: 14px; }
+      .row {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; margin-top: 12px; font-size: 13px;
+      }
+      .row label { flex: 0 0 auto; color: #b7b7c0; }
+      .row input[type="range"] { flex: 1 1 auto; accent-color: #c9c9d4; }
+      .row .val { flex: 0 0 34px; text-align: right; color: #6f6f7a; font-variant-numeric: tabular-nums; }
+      .check {
+        display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: #b7b7c0;
+      }
+      .check input { width: 15px; height: 15px; accent-color: #c9c9d4; }
+      .controls.disabled { opacity: 0.4; pointer-events: none; }
+      .hint { font-size: 11px; color: #6f6f7a; margin-top: 14px; line-height: 1.45; }
+      kbd {
+        background: #1c1c22; border: 1px solid #2c2c34; border-radius: 4px;
+        padding: 0 4px; font-size: 10px; color: #c9c9d4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1><img src="../assets/icons/icon-48.png" alt="" />DARKWEB</h1>
+      <p class="tag">lights out. your mouse is the torch.</p>
+
+      <button id="toggle" class="toggle off">Turn ON</button>
+
+      <div class="controls" id="controls">
+        <div class="row">
+          <label for="radius">Halo size</label>
+          <input type="range" id="radius" min="40" max="320" step="5" />
+          <span class="val" id="radiusVal"></span>
+        </div>
+        <div class="row">
+          <label for="darkness">Darkness</label>
+          <input type="range" id="darkness" min="70" max="100" step="1" />
+          <span class="val" id="darknessVal"></span>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="flicker" />
+          🔦 Torch flicker
+        </label>
+        <label class="check">
+          <input type="checkbox" id="music" />
+          🎵 Spooky music
+        </label>
+        <div class="row" id="volumeRow">
+          <label for="volume">Volume</label>
+          <input type="range" id="volume" min="0" max="60" step="1" />
+          <span class="val" id="volumeVal"></span>
+        </div>
+      </div>
+
+      <p class="hint">
+        Move your mouse to see. Press <kbd>Esc</kbd> or <kbd>⌘⇧K</kbd> to exit.
+      </p>
+    </div>
+    <script src="state.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

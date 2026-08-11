@@ -1,0 +1,6 @@
+.venv/
+node_modules/
+*.zip
+.DS_Store
+tests/.pw-profile/
+playwright-report/

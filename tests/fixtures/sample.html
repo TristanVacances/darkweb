@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DARKWEB test page</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, serif;
+        background: #f4f1ea;
+        color: #201a14;
+        padding: 40px;
+        line-height: 1.6;
+      }
+      h1 { font-size: 40px; }
+      p { max-width: 640px; font-size: 18px; }
+      #clickme {
+        display: inline-block; margin-top: 20px; padding: 14px 22px;
+        background: #b8432a; color: #fff; border: 0; border-radius: 8px;
+        font-size: 18px; cursor: pointer;
+      }
+      #result { margin-top: 16px; font-weight: bold; color: #0a7a2f; min-height: 24px; }
+    </style>
+  </head>
+  <body>
+    <h1>A perfectly ordinary, brightly-lit web page</h1>
+    <p>
+      This paragraph exists so there is something to hide in the dark. When DARKWEB
+      is on, all of this should vanish under black, revealed only where the mouse
+      flashlight points.
+    </p>
+    <button id="clickme">Click me — proves the page is still usable</button>
+    <div id="result"></div>
+    <script>
+      document.getElementById("clickme").addEventListener("click", () => {
+        document.getElementById("result").textContent = "CLICKED_THROUGH";
+      });
+    </script>
+  </body>
+</html>
