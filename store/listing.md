@@ -49,4 +49,4 @@ A novelty extension that darkens the current web page and reveals it under a
 mouse-following flashlight halo, with an optional ambient horror drone.
 
 ## Privacy policy URL
-(host store/privacy.html, e.g. GitHub Pages, and paste the URL here)
+https://tristanvacances.github.io/darkweb/store/privacy.html
