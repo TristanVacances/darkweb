@@ -1,75 +1,108 @@
 # HANDOFF — DARKWEB
 
-## Status: ✅ BUILT, TESTED, PACKAGED — not yet store-submitted (Tristan's gated step)
-Joke MV3 Chrome extension: turns any page pitch-black, mouse = flashlight, spooky
-Web Audio drone. Forked from `~/Documents/chienternet/`'s skeleton. Family:
-CHIENTERNET / RIGOLOL / SCATERNET / DARKWEB.
+_Last updated: 2026-08-12_
 
-- Project: `~/Documents/darkweb/`
-- Tests: `npm test` → **9/9 green** (8 unit + 1 Playwright e2e loading the real
-  unpacked build). e2e proves: overlay appears on enable, `pointer-events:none`,
-  covers viewport, halo follows the mouse, **click-through works** (clicks a button
-  under the black and it fires), `Esc` removes the overlay + flips storage off,
-  re-enable works after a full teardown.
-- Package: `npm run build` → `darkweb-v1.0.0.zip` (runtime files only).
+## Status: ✅ BUILT · TESTED · PACKAGED · REPO+PAGES LIVE — only the manual Web Store submission remains (Tristan's gated step)
+
+Joke MV3 Chrome extension: turns any page pitch-black, the mouse is a flashlight
+halo that reveals the page underneath, plus a low procedural Web Audio horror
+drone. Click-through (page stays usable). Family: CHIENTERNET / RIGOLOL /
+SCATERNET / **DARKWEB**. Forked from `~/Documents/chienternet/`'s skeleton.
+
+- **Local:** `~/Documents/darkweb/`
+- **Repo:** https://github.com/TristanVacances/darkweb (branch `master`, pushed)
+- **Privacy policy (LIVE, GitHub Pages):**
+  https://tristanvacances.github.io/darkweb/store/privacy.html  (HTTP 200 verified)
+- **Package:** `npm run build` → `darkweb-v1.0.0.zip` (48K, runtime files only).
+- **Tests:** `npm test` → **9/9 green** (8 unit halo-geometry + 1 Playwright e2e on
+  the real unpacked build: overlay appears, `pointer-events:none`, follows mouse,
+  **click-through fires**, `Esc` removes overlay + flips storage off, re-enable
+  works after full teardown).
+
+## ⏭️ THE ONE REMAINING STEP — submit to the Chrome Web Store (manual)
+Chrome blocks extensions from scripting the dev console, so the dashboard is filled
+by hand. Everything you paste/upload is ready. Go to
+https://chrome.google.com/webstore/devconsole (account `bessudo.tristan@gmail.com`,
+$5 dev fee already paid from CHIENTERNET).
+
+1. **Package** → upload `darkweb-v1.0.0.zip`.
+2. **Store listing:**
+   - Title/Summary: auto from the manifest.
+   - **Description**: paste from `store/listing.md`.
+   - **Category**: Fun · **Language**: English.
+   - **Store icon** (128×128): `assets/icons/icon-128.png`.
+   - **Screenshots** (1280×800): `store/screenshots/store-1.png`, `store-2.png`,
+     `store-3.png`, `store-4-popup.png`.
+   - **Small promo tile** (440×280): `store/promo/small-tile-440x280.png`.
+   - **Marquee promo tile** (1400×560): `store/promo/marquee-1400x560.png`.
+   - Homepage URL: the GitHub repo. Mature content: OFF.
+3. **Privacy:**
+   - **Single purpose** + **storage justification** + **host permission
+     justification**: paste from `store/listing.md`.
+   - **Are you using remote code?** → **NO** (all JS is bundled; no eval, no
+     external scripts). ⚠️ Do NOT copy SCATERNET's "Yes" here.
+   - **Data usage**: leave every checkbox UNCHECKED (collects nothing).
+   - **Certify disclosures**: check all THREE.
+   - **Privacy policy URL**: `https://tristanvacances.github.io/darkweb/store/privacy.html`.
+4. **Distribution**: Unlisted (like the siblings).
+5. **Save draft → Submit for review.** Verdict by email + dev console in a few days.
+   Don't retouch anything while it's in review.
+
+The full field-by-field copy is in `store/listing.md`.
 
 ## Architecture (storage-driven, no message passing)
 `chrome.storage.local` is the single source of truth. Popup + toolbar click +
 hotkey command + `Esc` all just write storage; content scripts react via
-`storage.onChanged`. Only permissions: `storage` + `commands`. No network, no
-`tabs`, no host permissions, no web-accessible resources → trivial privacy story.
+`storage.onChanged`. Permissions: **`storage` + `commands` only** — no network, no
+`tabs`, no host-data read, no web-accessible resources.
 
-Content scripts load in order (`manifest.json`): `state.js` → `halo.js` →
-`drone.js` → `darkweb.js`, at `document_start`, `all_frames: true`.
+Content scripts load in order (manifest): `state.js` → `halo.js` → `drone.js` →
+`darkweb.js`, at `document_start`, `all_frames: true`.
 
-- **`src/halo.js`** — pure gradient geometry (`haloBackground`, `vignetteBackground`,
-  `clampNum`). Classic-script global `globalThis.DarkwebHalo`, so the unit test can
-  run it in a `node:vm` sandbox (no DOM). All numeric inputs clamped; nil/junk →
-  safe defaults (never NaN).
-- **`src/darkweb.js`** — the engine. **Top frame** owns ONE fixed click-through
-  overlay; repaints on rAF; flicker loop keeps repainting while on. **Child frames**
-  only relay mouse coords up (see iframe note). `Esc` writes `enabled:false`.
-- **`src/drone.js`** — procedural Web Audio horror bed (`DarkwebDrone.start/stop/
-  setVolume/isRunning`). Lazy `AudioContext`; slow gain ramps (no clicks); random
-  shimmer via `setTimeout`. Autoplay handled (see note).
-- **`src/background.js`** — toolbar click + `toggle-darkweb` command both toggle
-  `enabled`; icon on/off sync via `storage.onChanged`. No storage writes on install.
+| File | Role |
+|---|---|
+| `src/state.js` | `chrome.storage` wrapper + `DEFAULTS` (enabled, radius, darkness=1.0, flicker, music, volume) |
+| `src/halo.js` | pure gradient geometry (`haloBackground`, `vignetteBackground`, `clampNum`); classic-script global so the unit test runs it in `node:vm` |
+| `src/darkweb.js` | the engine: top-frame overlay, rAF paint, flicker loop, iframe mouse-relay, `Esc`, storage reactions |
+| `src/drone.js` | procedural Web Audio horror bed (`DarkwebDrone.start/stop/setVolume/isRunning`) |
+| `src/background.js` | service worker: toolbar + `toggle-darkweb` hotkey toggle, icon on/off sync |
+| `src/popup.html`/`.js` | dark-themed control panel |
+| `assets/icons/` | on/off toolbar icons (generated by `tools/make_icons.py`) |
+| `tests/halo.test.mjs` | unit (geometry, nil/junk/edge inputs, no NaN) |
+| `tests/e2e.test.mjs` | Playwright on the real unpacked build |
+| `tools/` | `make_icons.py`, `make_promo.py`, `popup_shot.mjs`, `shots.mjs`, `package.sh` |
+| `store/` | `listing.md`, `privacy.html`, `screenshots/`, `promo/` |
+
+## How to reproduce assets
+```bash
+npm run assets                 # toolbar icons (needs .venv + Pillow)
+node tools/shots.mjs           # store-1..3.png (1280×800 beam shots)
+node tools/popup_shot.mjs      # popup-raw.png
+./.venv/bin/python tools/make_promo.py   # store-4-popup.png + promo tiles
+npm run build                  # darkweb-v1.0.0.zip
+```
 
 ## Non-obvious things (don't relearn the hard way)
-- **e2e needs the full Chromium channel.** Playwright's default headless shell does
-  NOT load extensions. The test uses `channel: "chromium"` — run
-  `npx playwright install chromium` first (already done in this env).
-- **Content-script console logs are invisible** across the extension boundary; the
-  e2e asserts on the real DOM (`#darkweb-overlay` + computed styles), not logs.
-- **Autoplay policy**: a page-created `AudioContext` starts `suspended` and only
+- **e2e needs the full Chromium channel** (`channel: "chromium"`); Playwright's
+  default headless shell does NOT load extensions. `npx playwright install chromium`
+  already run in this env.
+- **Content-script logs are invisible** across the extension boundary → the e2e
+  asserts on the real DOM (`#darkweb-overlay` + computed styles), not console.
+- **Web Audio autoplay**: a page-created `AudioContext` starts `suspended` and only
   resumes after a user gesture *in the page*. `drone.start()` calls `resume()` and
-  also arms one-time `pointerdown`/`keydown` listeners to resume on first
-  interaction. Because DARKWEB is click-through, the user clicks/moves naturally, so
-  the drone comes up within the first interaction. Toggling on via the popup alone
-  (no page click yet) may leave audio suspended until the first page click — by
-  design, not a bug.
-- **Default darkness = 1.0** (pure black beyond the beam) to match the "only the
-  mouse reveals it" spec. Slider goes down to 0.70 for a faint see-the-page bleed.
+  arms one-time `pointerdown`/`keydown` listeners. Extension is click-through, so the
+  drone comes up on the first real click. Toggling on via the popup alone (no page
+  click yet) can leave audio suspended until the first page interaction — by design.
+- **Default darkness = 1.0** (pure black beyond the beam), slider down to 0.70.
+- **Promo tiles must be 24-bit PNG, no alpha** → `make_promo.py` saves RGB.
 
 ## Known limitations (named, not silent)
-1. **Iframes nested ≥2 deep**: the beam tracks over direct child iframes (coords
-   relayed + offset added via `event.source` ↔ `iframe.contentWindow` match), but a
-   frame nested two or more levels down posts to `window.top`, whose direct-iframe
-   list won't contain it, so its coords are ignored and the beam freezes while the
-   cursor is inside that deep frame. Rare in practice. Fix (if ever wanted): relay
-   up one parent level at a time, each frame adding its own offset.
-2. **`chrome://` and the Web Store** pages don't run content scripts (Chrome policy),
-   so DARKWEB has no effect there. Expected.
-3. **Music vs popup-only toggle**: see autoplay note — audio may wait for the first
-   page interaction.
-
-## Next steps (Tristan's gated)
-- Load unpacked in real Chrome, sanity-check the drone volume feels right to you,
-  tune `state.js` `volume` default (currently 0.15) if needed.
-- Chrome Web Store submission (dashboard is unscriptable by extensions — manual):
-  use paste-ready copy in `store/listing.md`; host `store/privacy.html` (GitHub
-  Pages, like the siblings) and paste its URL; upload `darkweb-v1.0.0.zip`.
-- Optional: GitHub repo + Pages for the privacy policy (mirror the sibling setup).
+1. **Iframes nested ≥2 deep**: the beam tracks over *direct* child iframes (coords
+   relayed + offset via `event.source` ↔ `iframe.contentWindow` match), but a frame
+   two+ levels down posts to `window.top`, whose direct-iframe list won't contain it,
+   so its coords are ignored and the beam freezes while the cursor is in that deep
+   frame. Fix if ever wanted: relay up one parent level at a time.
+2. **`chrome://` and the Web Store** pages don't run content scripts — no effect there.
 
 ## Memory
-Personal memory: `darkweb_project.md` (indexed in `MEMORY.md`).
+Personal memory: `~/.claude/.../memory/darkweb_project.md` (indexed in `MEMORY.md`).
